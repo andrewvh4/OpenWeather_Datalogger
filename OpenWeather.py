@@ -42,8 +42,7 @@ class OpenWeather():
 		r = requests.get("https://api.openweathermap.org/data/2.5/onecall?lat="+str(lat)+"&lon="+str(lon)+"&appid="+APIKey)
 		return(json.loads(r.text))
 		
-	def storeData(lat, lon, time, data):
-		
+	def storeData(data):
 		with open("CallLogs.json", 'r') as dataLogFile:
 			dataLog = json.load(dataLogFile)
 	
@@ -62,11 +61,3 @@ class OpenWeather():
 			value = float(item['value'])
 			data = data + [[date, value]]
 			'''
-	
-		
-	
-
-OpenWeather.init()
-
-lat, lon = getLocation("StL")
-OpenWeather.storeData(lat, lon, str(datetime.now()), OpenWeather.OneCall(lat, lon))
