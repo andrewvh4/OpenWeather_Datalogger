@@ -13,7 +13,17 @@ def getAPIKey():
 		print(APIKey)
 	return(APIKey)
 
-def OneCall():
+def getLocation(location):
+	with open("Locations.txt", 'r') as f:
+		for line in f:
+			line = line.replace('\n','')
+			line = line.split(',')
+			if(line[0]==location):
+				return(float(line[1]), float(line[2]))
+		print("Error, Location not found:" + location)
+		return(0,0)
+
+def OneCall(lat, lon):
 	global APIKey
 	r = requests.get("https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&appid="+APIKey)
 	print(r.text)
@@ -32,4 +42,5 @@ def OneCall():
 	
 	
 getAPIKey()
+print(getLocation("StL"))
 print(APIKey)
