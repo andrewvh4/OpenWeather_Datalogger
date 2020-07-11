@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 API_KEY.txt
+Locations.txt
