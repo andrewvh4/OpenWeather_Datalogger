@@ -20,7 +20,7 @@ class OpenWeather():
 	def init():
 		OpenWeather.getAPIKey()
 		try:
-			open("CallLogs.json", 'r')
+			open("HourlyHistory.json", 'r')
 		except:
 			OpenWeather.makeDataLog()
 		
@@ -33,22 +33,35 @@ class OpenWeather():
 		return(APIKey)
 	def makeDataLog():
 		print("Creating New Datalog File")
-		with open("CallLogs.json", 'w+') as f:
+		with open("HourlyHistory.json", 'w+') as f:
 			data = {}
-			data['Entries']=[]
 			json.dump(data, f)
 			
+	def Historical(lat, lon, time):
+		r = requests.get("http://api.openweathermap.org/data/2.5/onecall/timemachine?lat="+str(lat)+"&lon="+str(lon)+"&dt="+str(time)+"&exclude=current&appid="+APIKey)
+		return(json.loads(r.text))
+	
 	def OneCall(lat, lon):	
 		r = requests.get("https://api.openweathermap.org/data/2.5/onecall?lat="+str(lat)+"&lon="+str(lon)+"&appid="+APIKey)
 		return(json.loads(r.text))
 		
 	def storeData(data):
-		with open("CallLogs.json", 'r') as dataLogFile:
+		with open("HourlyHistory.json", 'r') as dataLogFile:
 			dataLog = json.load(dataLogFile)
-	
-		dataLog['Entries'].append(data)
+
+		location=str(data["lat"])+'/'+str(data["lon"])
+		
+		if(location not in dataLog):
+			dataLog[location]={}
+			dataLog[location]["lat"]=data["lat"]
+			dataLog[location]["lon"]=data["lon"]
+			dataLog[location]["timezone"]=data["timezone"]
+			dataLog[location]["timezone_offset"]=data["timezone_offset"]
+			dataLog[location]['hourly']=[]
 			
-		with open("CallLogs.json", 'w') as dataLogFile:
+		dataLog[location]['hourly']=dataLog[location]['hourly']+data['hourly']
+			
+		with open("HourlyHistory.json", 'w') as dataLogFile:
 			json.dump(dataLog, dataLogFile)
 		
 		
