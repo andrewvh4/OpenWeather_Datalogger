@@ -64,7 +64,6 @@ class OpenWeather():
 		with open("HourlyHistory.json", 'w') as dataLogFile:
 			json.dump(dataLog, dataLogFile)
 		
-		
 		'''
 		if(data_JSON!={}):
 			results = [item for item in data_JSON['results'] if item['datatype']=='TAVG']

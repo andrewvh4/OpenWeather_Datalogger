@@ -1,6 +1,6 @@
 from OpenWeather import *
-import time
-import datetime
+from time import *
+from datetime import *
 
 
 '''
@@ -11,27 +11,33 @@ sec_day = 86400
 
 OpenWeather.init()
 
-days=-1
+try:
+	open("HistoryLog.txt", 'r')
+except:
+	print("Creating new history file")
+	with open("HistoryLog.txt", 'w') as f:
+		pass
 
-while True:
-	print("Days to Look Back:", end = '')
-	days = int(input())
-	if (days > 5):
-		print("Cannot go farther than 5 days")
-	elif (days<0):
-		print("Days must be positive")
-	else:
-		print("")
-		break
+dates = []
 
-with open("Locations.txt", 'r') as f:
-	for line in f:
-		line = line.replace('\n','')
-		line = line.split(',')
-		print("Gathering Data:"+line[0])
-		for i in range(1, days+1):
-			timestamp = int(datetime.datetime.utcnow().timestamp())-i*sec_day
-			print('\tDate:'+ datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d'))
-			OpenWeather.storeData(OpenWeather.Historical(float(line[1]), float(line[2]), timestamp))
-	time.sleep(.5)	
+with open("HistoryLog.txt", 'r') as f:
+	dates=[x.replace('\n', '') for x in f.readlines()]
 
+with open("HistoryLog.txt", 'a') as dateLog:
+	with open("Locations.txt", 'r') as locationFile:
+		locations = [x.replace('\n', '').split(',') for x in locationFile.readlines()]
+		
+		for location in locations:
+			print("Locations:"+location[0])
+		print('\n')
+					
+		for i in range(6,0,-1):
+			timestamp = int(datetime.utcnow().timestamp())-i*sec_day
+			if(datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d') not in dates):
+				print('Date:'+ datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d'))
+				dateLog.write('\n'+datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d'))
+	
+				for location in locations:
+					OpenWeather.storeData(OpenWeather.Historical(float(location[1]), float(location[2]), timestamp))
+					
+sleep(.5)	
